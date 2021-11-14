@@ -1,5 +1,4 @@
 import { Component } from "react";
-import axios from "axios";
 import { parseJwt, usuarioAutenticado } from '../../services/auth/auth';
 import { Link } from 'react-router-dom';
 
@@ -23,7 +22,21 @@ export default class Home extends Component {
                     <img src={logo} alt="Logo SPMedicalGroup" />
                     <nav>
                         <a>Home</a>
-                        <a name="/consultas" onClick={this.redirecionarPara} >Consultas</a>
+                        {
+                            //console.log(parseJwt()),
+
+                            parseJwt().role === 'ADM' ?
+                            <a name="/consultas" onClick={this.redirecionarPara} >Consultas</a> :
+
+                            parseJwt().role === 'MED' ?
+                            <a name="/consultas-medico" onClick={this.redirecionarPara} >Consultas</a> :
+                            
+                            parseJwt().role === 'PAC' ?
+                            <a name="/consultas-paciente" onClick={this.redirecionarPara} >Consultas</a> :
+
+                            null
+
+                        }
 
                         {
                             usuarioAutenticado() 
