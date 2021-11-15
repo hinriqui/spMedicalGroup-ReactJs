@@ -21,10 +21,10 @@ export default class Home extends Component {
                 <header class="container">
                     <img src={logo} alt="Logo SPMedicalGroup" />
                     <nav>
-                        <a>Home</a>
+                        <a name="/" onClick={this.redirecionarPara}>Home</a>
                         {
                             //console.log(parseJwt()),
-
+                            usuarioAutenticado() ?
                             parseJwt().role === 'ADM' ?
                             <a name="/consultas" onClick={this.redirecionarPara} >Consultas</a> :
 
@@ -34,7 +34,7 @@ export default class Home extends Component {
                             parseJwt().role === 'PAC' ?
                             <a name="/consultas-paciente" onClick={this.redirecionarPara} >Consultas</a> :
 
-                            null
+                            null : null
 
                         }
 

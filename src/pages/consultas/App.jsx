@@ -1,6 +1,6 @@
 import { React, Component } from 'react';
 import axios from "axios";
-
+import { parseJwt, usuarioAutenticado } from '../../services/auth/auth';
 import logo from "../../assets/logo.png"
 import calendario from "../../assets/calendar.png"
 import seta from "../../assets/arrow.png"
@@ -57,13 +57,19 @@ class ListarConsultas extends Component {
                 Authorization: 'Bearer ' + localStorage.getItem('usuario-login'),
             },
         })
+            .catch(erro => console.log(erro))
+
             .then(resposta => {
                 if (resposta.status == 200) {
-                    return resposta.data.nome
+
+                    // console.log('\nMédico:')
+                    // console.log(resposta)
+                    // console.log(resposta.data)
+                    // console.log(resposta.data.nome)
+
+                    return resposta.data
                 };
             })
-
-            .catch(erro => console.log(erro))
     }
 
     componentDidMount() {
@@ -71,6 +77,9 @@ class ListarConsultas extends Component {
     }
 
     render() {
+
+        console.log('teste')
+        console.log(this.obterMedico(1))
 
         let navPage = []
 
@@ -87,12 +96,12 @@ class ListarConsultas extends Component {
                                 <div className="nomes-consulta">
                                     <img src={calendario} alt="" />
                                     <div className="nomes-div">
-                                        <p>Dr. {this.obterMedico(x.idMedico)}</p>
-                                        <span>Pedro Paulo Pereira Pontes</span>
+                                        <p>Dr. 
+                                            {/* {this.obterMedico(x.idMedico)} */}
+                                        </p>
+                                        <span>Paciente Atrasado(No Sistema)</span>
                                     </div>
                                 </div>
-
-                                <button>Editar descrição</button>
 
                                 <div className="hora-consulta">
                                     <p>{x.dataConsulta.split('T')[1].substring(0, 5)}</p>
@@ -103,7 +112,7 @@ class ListarConsultas extends Component {
                     })
                 }
 
-                
+
                 {/* <article>
                     <div className="nomes-consulta">
                         <img src={calendario} alt="" />
@@ -120,7 +129,7 @@ class ListarConsultas extends Component {
                         <span>00/00/0000</span>
                     </div>
                 </article> */}
-                
+
                 {
                     //this.state.navPage.largura > 1 ?
 
@@ -146,6 +155,139 @@ class ListarConsultas extends Component {
     }
 }
 
+class CadastrarConsultas extends Component {
+
+    constructor(props) {
+        super(props)
+        this.state = {
+            listaMedicos: [],
+            listaPacientes: [],
+
+            idMedico: 0,
+            idPaciente: 0,
+            situacao: '',
+            valor: 0,
+            dataConsulta: new Date(),
+        }
+    }
+
+    async listarMedicos() {
+        await axios('http://localhost:5000/api/Medicos', {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('usuario-login'),
+            },
+        })
+            .then(resposta => {
+                if (resposta.status == 200) {
+                    this.setState({ listaMedicos: resposta.data })
+                };
+                //console.log(this.state.listaMedicos)
+            })
+
+            .catch(erro => console.log(erro))
+    }
+
+    async listarPacientes() {
+        await axios('http://localhost:5000/api/Pacientes', {
+            headers: {
+                Authorization: 'Bearer ' + localStorage.getItem('usuario-login'),
+            },
+        })
+            .then(resposta => {
+                if (resposta.status == 200) {
+                    this.setState({ listaPacientes: resposta.data })
+                };
+                // console.log(this.state.listaPacientes)
+            })
+
+            .catch(erro => console.log(erro))
+    }
+
+    atualizaStateCampo = async (campo) => {
+        await this.setState({ [campo.target.name]: campo.target.value });
+        // console.log(this.state)
+    };
+
+    // Erro!
+    cadastrarConsulta(event) {
+        event.preventDefault()
+
+        let consulta = {
+            idMedico: this.state.idMedico,
+            idPaciente: this.state.idPaciente,
+            situacao: this.state.situacao,
+            valor: this.state.valor,
+            dataConsulta: new Date(this.state.dataConsulta),
+        };
+
+        // axios
+        //     .post('http://localhost:5000/api/Consultas', consulta, {
+        //         headers: {
+        //             Authorization: 'Bearer ' + localStorage.getItem('usuario-login'),
+        //         },
+        //     })
+        //     .then((resposta) => {
+        //         if (resposta.status === 201) {
+        //             console.log('Consulta cadastrada!');
+        //         }
+        //     })
+        //     .catch((erro) => {
+        //         console.log(erro);
+        //     })
+    }
+
+    componentDidMount() {
+        this.listarMedicos()
+        this.listarPacientes()
+    }
+
+    render() {
+        return (
+            <section className="cadastrar">
+                <h2>Cadastro</h2>
+                <hr />
+                <form onSubmit={this.cadastrarConsulta}>
+
+                    <select name="idMedico" onChange={this.atualizaStateCampo} >
+                        <option value="0" selected disabled>Médico</option>
+                        {
+                            this.state.listaMedicos.map(m => {
+                                return (
+                                    <option value={m.idMedico}>{m.nome}</option>
+                                )
+                            })
+                        }
+
+                    </select>
+
+                    <select name="idPaciente" onChange={this.atualizaStateCampo} >
+                        <option value="0" selected disabled>Paciente</option>
+                        {
+                            this.state.listaPacientes.map(p => {
+                                return (
+                                    <option value={p.idPaciente}>{p.nome}</option>
+                                )
+                            })
+                        }
+                    </select>
+
+                    <select name="situacao" onChange={this.atualizaStateCampo} >
+                        <option value="Agendada" selected disabled>Situação</option>
+                        <option value="Agendada">Agendada</option>
+                        <option value="Realizada">Realizada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+
+                    <input name="valor" type="number" min="0.00" max="10000.00" step="0.01" placeholder="Valor" onChange={this.atualizaStateCampo} />
+
+                    <input name="dataConsulta" type="date" placeholder="Data" onChange={this.atualizaStateCampo} />
+
+                    <button className="submit-cadastrar" type="submit">Cadastrar</button>
+                </form>
+            </section>
+        )
+    }
+}
 
 export default class Consultas extends Component {
 
@@ -156,55 +298,53 @@ export default class Consultas extends Component {
         }
     }
 
+    redirecionarPara = (path) => {
+        this.props.history.push(path.target.name)
+    }
+
+    efetuarLogout = () => {
+        localStorage.removeItem('usuario-login')
+        this.props.history.push('/login')
+    }
+
     render() {
         return (
             <div>
-                <header className="container">
+                <header class="container">
                     <img src={logo} alt="Logo SPMedicalGroup" />
                     <nav>
-                        <a href="#">Home</a>
-                        <a href="#">Consultas</a>
-                        <button id="logar" href="#">Conectar</button>
+                        <a name="/" onClick={this.redirecionarPara}>Home</a>
+                        {
+                            //console.log(parseJwt()),
+                            usuarioAutenticado() ?
+                                parseJwt().role === 'ADM' ?
+                                    <a name="/consultas" onClick={this.redirecionarPara} >Consultas</a> :
+
+                                    parseJwt().role === 'MED' ?
+                                        <a name="/consultas-medico" onClick={this.redirecionarPara} >Consultas</a> :
+
+                                        parseJwt().role === 'PAC' ?
+                                            <a name="/consultas-paciente" onClick={this.redirecionarPara} >Consultas</a> :
+
+                                            null : null
+
+                        }
+
+                        {
+                            usuarioAutenticado()
+                                ? <button id="deslogar" name="/login" onClick={this.efetuarLogout} >Desconectar</button>
+                                : <button id="logar" name="/login" onClick={this.redirecionarPara} >Conectar</button>
+
+                        }
                     </nav>
                 </header>
+
                 <main className="main-consultas container">
                     <h1>Consultas</h1>
                     <hr />
                     <div className="consultas-section">
                         <ListarConsultas />
-
-                        <section className="cadastrar">
-                            <h2>Cadastro</h2>
-                            <hr />
-                            <form>
-
-                                <select name="medico">
-                                    <option value="0" value disabled>Médico</option>
-                                    <option value="">Teste 1</option>
-                                    <option value="">Teste 2</option>
-                                    <option value="">Teste 3</option>
-                                </select>
-
-                                <select name="paciente">
-                                    <option value="0" value disabled>Paciente</option>
-                                    <option value="">Teste 1</option>
-                                    <option value="">Teste 2</option>
-                                    <option value="">Teste 3</option>
-                                </select>
-
-                                <select name="situação">
-                                    <option value="0" value disabled>Situação</option>
-                                    <option value="">Teste 1</option>
-                                    <option value="">Teste 2</option>
-                                    <option value="">Teste 3</option>
-                                </select>
-
-                                <input type="number" min="0.00" max="10000.00" step="0.01" placeholder="Valor" />
-                                <input type="date" placeholder="Data" />
-
-                                <button type="submit">Cadastrar</button>
-                            </form>
-                        </section>
+                        <CadastrarConsultas />
                     </div>
 
                 </main>
