@@ -47,7 +47,6 @@ export default class Login extends Component {
 
   atualizaStateCampo = (campo) => {
     this.setState({ [campo.target.name]: campo.target.value })
-    console.log(`${this.state.email} + ${this.state.senha}`)
   };
 
   render() {

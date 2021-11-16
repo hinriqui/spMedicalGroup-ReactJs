@@ -11,8 +11,9 @@ export default class Consultas extends Component {
         super(props)
         this.state = {
             listaConsultas: [],
-            navAtual: 0,
-            navLength: 0,
+
+            // navAtual: 0,
+            // navLength: 0,
 
             descricao: '',
             consultaDescricao: {
@@ -34,22 +35,22 @@ export default class Consultas extends Component {
         this.props.history.push('/login')
     }
 
-    // Desenvolvimento...
-    mudarNavPage = async (event) => {
-        await this.setState({
-            navAtual: parseInt(event.target.value)
-        })
-        // console.log(this.state.navAtual)
-    }
+    /// Em Desenvolvimento - NavPage
+    //  
+    // mudarNavPage = async (event) => {
+    //     await this.setState({
+    //         navAtual: parseInt(event.target.value)
+    //     })
+    //     // console.log(this.state.navAtual)
+    // }
 
-    // Desenvolvimento...
-    calcularNavPage() {
-        this.setState({
-            // navLength: Math.ceil((this.state.listaConsultas.length / 6))
-            navLength: 5
-        })
-        // console.log(this.state.navLength)
-    }
+    // calcularNavPage() {
+    //     this.setState({
+    //         // navLength: Math.ceil((this.state.listaConsultas.length / 6))
+    //         navLength: 5
+    //     })
+    //     // console.log(this.state.navLength)
+    // }
 
     async listarConsultasMedico() {
         await axios('http://localhost:5000/api/Consultas/med/' + parseJwt().email, {
@@ -66,7 +67,7 @@ export default class Consultas extends Component {
 
             .catch(erro => console.log(erro))
 
-        this.calcularNavPage()
+        // this.calcularNavPage()
 
     }
 
@@ -134,15 +135,15 @@ export default class Consultas extends Component {
 
     render() {
 
-        let navPage = []
+        // let navPage = []
 
-        for (let i = 0; i < this.state.navLength; i++) {
-            navPage.push(i + 1)
-        }
+        // for (let i = 0; i < this.state.navLength; i++) {
+        //     navPage.push(i + 1)
+        // }
 
         return (
             <div>
-                <header class="container">
+                <header className="container">
                     <img src={logo} alt="Logo SPMedicalGroup" />
                     <nav>
                         <a name="/" onClick={this.redirecionarPara}>Home</a>
@@ -182,58 +183,26 @@ export default class Consultas extends Component {
                                             <div className="nomes-consulta">
                                                 <img src={calendario} alt="" />
                                                 <div className="nomes-div">
-                                                    <p>Dr. Ainda Sem Nome</p>
-                                                    <span>Paciente Atrasado(No Sistema)</span>
+                                                    <p>Dr. {x.idMedicoNavigation.nome}</p>
+                                                    <span>{x.idPacienteNavigation.nome}</span>
                                                 </div>
                                             </div>
 
                                             <button value={x.idConsulta} onClick={this.obterConsulta}>Editar descrição</button>
 
+
                                             <div className="hora-consulta">
-                                                <p>{x.dataConsulta.split('T')[1].substring(0, 5)}</p>
-                                                <span>{x.dataConsulta.split('T')[0]}</span>
+                                                <p>{Intl.DateTimeFormat("pt-BR", {
+                                                    hour: 'numeric', minute: 'numeric'
+                                                }).format(new Date(x.dataConsulta))}</p>
+
+                                                <span>{Intl.DateTimeFormat("pt-BR", {
+                                                    year: 'numeric', month: 'numeric', day: 'numeric',
+                                                }).format(new Date(x.dataConsulta))}</span>
                                             </div>
                                         </article>
                                     )
                                 })
-                            }
-
-
-                            {/* <article>
-                    <div className="nomes-consulta">
-                        <img src={calendario} alt="" />
-                        <div className="nomes-div">
-                            <p></p>
-                            <span>Pedro Paulo Pereira Pontes</span>
-                        </div>
-                    </div>
-
-                    <button>Editar descrição</button>
-
-                    <div className="hora-consulta">
-                        <p></p>
-                        <span>00/00/0000</span>
-                    </div>
-                </article> */}
-
-                            {
-                                //this.state.navPage.largura > 1 ?
-
-                                <nav>
-                                    <img src={seta} alt="" />
-
-                                    {
-                                        navPage.map(x => {
-                                            return (
-                                                <button className="nav-page" value={x} onClick={this.mudarNavPage} >{x}</button>
-                                            )
-                                        })
-                                    }
-
-                                    <img id="last-arrow" src={seta} alt="" />
-                                </nav>
-                                //: null
-
                             }
 
                         </section>

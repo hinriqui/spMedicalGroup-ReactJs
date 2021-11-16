@@ -11,8 +11,8 @@ export default class Consultas extends Component {
         super(props)
         this.state = {
             listaConsultas: [],
-            navAtual: 0,
-            navLength: 0,
+            // navAtual: 0,
+            // navLength: 0,
         }
     }
 
@@ -25,22 +25,22 @@ export default class Consultas extends Component {
         this.props.history.push('/login')
     }
 
-    // Desenvolvimento...
-    mudarNavPage = async (event) => {
-        await this.setState({
-            navAtual: parseInt(event.target.value)
-        })
-        // console.log(this.state.navAtual)
-    }
+    /// Em Desenvolvimento - NavPage
+    //  
+    // mudarNavPage = async (event) => {
+    //     await this.setState({
+    //         navAtual: parseInt(event.target.value)
+    //     })
+    //     // console.log(this.state.navAtual)
+    // }
 
-    // Desenvolvimento...
-    calcularNavPage() {
-        this.setState({
-            // navLength: Math.ceil((this.state.listaConsultas.length / 6))
-            navLength: 5
-        })
-        // console.log(this.state.navLength)
-    }
+    // calcularNavPage() {
+    //     this.setState({
+    //         // navLength: Math.ceil((this.state.listaConsultas.length / 6))
+    //         navLength: 5
+    //     })
+    //     // console.log(this.state.navLength)
+    // }
 
     async listarConsultasPaciente() {
         await axios('http://localhost:5000/api/Consultas/pac/' + parseJwt().email, {
@@ -57,7 +57,7 @@ export default class Consultas extends Component {
 
             .catch(erro => console.log(erro))
 
-        this.calcularNavPage()
+        // this.calcularNavPage()
 
     }
 
@@ -75,7 +75,7 @@ export default class Consultas extends Component {
 
         return (
             <div>
-                <header class="container">
+                <header className="container">
                     <img src={logo} alt="Logo SPMedicalGroup" />
                     <nav>
                         <a name="/" onClick={this.redirecionarPara}>Home</a>
@@ -107,7 +107,7 @@ export default class Consultas extends Component {
                     <h1>Consultas</h1>
                     <hr />
                     <div className="consultas-section">
-                        
+
                         <section className="listar">
                             {
                                 this.state.listaConsultas.map(x => {
@@ -121,8 +121,6 @@ export default class Consultas extends Component {
                                                 </div>
                                             </div>
 
-                                            <button value={x.idConsulta} onClick={this.obterConsulta}>Editar descrição</button>
-
                                             <div className="hora-consulta">
                                                 <p>{x.dataConsulta.split('T')[1].substring(0, 5)}</p>
                                                 <span>{x.dataConsulta.split('T')[0]}</span>
@@ -133,24 +131,9 @@ export default class Consultas extends Component {
                             }
 
 
-                            {/* <article>
-                    <div className="nomes-consulta">
-                        <img src={calendario} alt="" />
-                        <div className="nomes-div">
-                            <p></p>
-                            <span>Pedro Paulo Pereira Pontes</span>
-                        </div>
-                    </div>
+                           
 
-                    <button>Editar descrição</button>
-
-                    <div className="hora-consulta">
-                        <p></p>
-                        <span>00/00/0000</span>
-                    </div>
-                </article> */}
-
-                            {
+                            {/* {
                                 //this.state.navPage.largura > 1 ?
 
                                 <nav>
@@ -168,7 +151,7 @@ export default class Consultas extends Component {
                                 </nav>
                                 //: null
 
-                            }
+                            } */}
 
                         </section>
 
