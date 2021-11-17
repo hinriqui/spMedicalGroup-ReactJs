@@ -15,14 +15,10 @@ export default class Consultas extends Component {
             // navAtual: 0,
             // navLength: 0,
 
+            consulta: [],
+            nome: '?',
             descricao: '',
-            consultaDescricao: {
-                idMedico: 0,
-                idPaciente: 0,
-                situacao: '',
-                valor: 0,
-                dataConsulta: '',
-            }
+
         }
     }
 
@@ -71,62 +67,54 @@ export default class Consultas extends Component {
 
     }
 
-    // Erro!
-    obterConsulta(event) {
-        axios(`http://localhost:5000/api/Medicos/${event.target.value}`, {
+    obterConsulta = (event) => {
+        axios(`http://localhost:5000/api/Consultas/${event.target.value}`, {
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('usuario-login'),
             },
         })
             .then(resposta => {
                 console.log('consulta')
-                console.log(resposta)
                 if (resposta.status == 200) {
                     this.setState({
-                        consultaDescricao: {
-                            idConsulta: resposta.data.idConsulta,
-                            idMedico: resposta.data.idMedico,
-                            idPaciente: resposta.data.idPaciente,
-                            situacao: resposta.data.situacao,
-                            valor: resposta.data.valor,
-                            dataConsulta: resposta.data.dataConsulta,
-                        }
+                        consulta: resposta.data,
+                        nome: resposta.data.idPacienteNavigation.nome,
+                        descricao: resposta.data.descricao
                     })
+                    // console.log(this.state)
                 };
             })
 
             .catch(erro => console.log(erro))
     }
 
-    editarDescricao(event) {
+    atualizaStateCampo = (campo) => {
+        this.setState({ [campo.target.name]: campo.target.value });
+        console.log(this.state)
+    };
+
+    editarDescricao = (event) => {
         event.preventDefault()
 
-        let consulta = {
-            idMedico: this.state.consultaDescricao.idMedico,
-            idPaciente: this.state.consultaDescricao.idPaciente,
-            situacao: this.state.consultaDescricao.situacao,
-            valor: this.state.consultaDescricao.valor,
-            dataConsulta: new Date(this.state.consultaDescricao.dataConsulta),
-            descricao: this.state.consultaDescricao.descricao
-        };
+        let consulta = this.state.consulta
+        consulta.descricao = this.state.descricao
 
-        // console.log('consulta')
-        // console.log(consulta)
+        console.log(consulta)
 
-        // axios
-        //     .post('http://localhost:5000/api/Consultas', consulta, {
-        //         headers: {
-        //             Authorization: 'Bearer ' + localStorage.getItem('usuario-login'),
-        //         },
-        //     })
-        //     .then((resposta) => {
-        //         if (resposta.status === 201) {
-        //             console.log('Consulta cadastrada!');
-        //         }
-        //     })
-        //     .catch((erro) => {
-        //         console.log(erro);
-        //     })
+        axios
+            .put('http://localhost:5000/api/Consultas', consulta, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('usuario-login'),
+                },
+            })
+            .then((resposta) => {
+                if (resposta.status === 201) {
+                    console.log('Consulta cadastrada!');
+                }
+            })
+            .catch((erro) => {
+                console.log(erro);
+            })
     }
 
     componentDidMount() {
@@ -210,30 +198,14 @@ export default class Consultas extends Component {
                         <section className="cadastrar">
                             <h2>Editar descrição</h2>
                             <hr />
-                            {
-                                this.state.consultaDescricao.idConsulta == null ?
-                                    <article>Consulta não selecionada</article>
-                                    :
-                                    <article>
-                                        <div className="nomes-consulta">
-                                            <img src={calendario} alt="" />
-                                            <div className="nomes-div">
-                                                <p>Dr. {this.obterMedico(this.state.consultaDescricao.idMedico)}</p>
-                                                <span>Pedro Paulo Pereira Pontes</span>
-                                            </div>
-                                        </div>
-
-                                        <button>Editar descrição</button>
-                                        <div className="hora-consulta">
-                                            <p>{this.state.consultaDescricao.dataConsulta.split('T')[1]}</p>
-                                            <span>{this.state.consultaDescricao.dataConsulta.split('T')[0]}</span>
-                                        </div>
-                                    </article>
-                            }
+                            
+                            <article>
+                                {this.state.nome}
+                            </article>
 
                             <hr />
-                            <form onSubmit={this.cadastrarConsulta}>
-                                <textarea name="" id="" cols="30" rows="10"></textarea>
+                            <form onSubmit={this.editarDescricao}>
+                                <textarea name="descricao" id="" cols="30" rows="10" value={this.state.descricao} onChange={this.atualizaStateCampo}></textarea>
 
                                 <button className="submit-cadastrar" type="submit">Cadastrar</button>
                             </form>

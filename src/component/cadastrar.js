@@ -11,10 +11,10 @@ export default class CadastrarConsultas extends Component {
 
             isLoading: false,
 
-            idMedico: 1,
-            idPaciente: 1,
-            situacao: 'Agendada',
-            valor: 50,
+            idMedico: 0,
+            idPaciente: 0,
+            situacao: '',
+            valor: 0,
             dataConsulta: new Date(),
         }
     };
@@ -56,7 +56,6 @@ export default class CadastrarConsultas extends Component {
         console.log(this.state)
     };
 
-    // Erro!
     cadastrarConsultateste = (event) => {
         event.preventDefault();
         console.log(this)
@@ -86,6 +85,8 @@ export default class CadastrarConsultas extends Component {
             .catch((erro) => {
                 console.log(erro);
             })
+
+        window.location.reload()
     };
 
     componentDidMount() {
@@ -124,7 +125,7 @@ export default class CadastrarConsultas extends Component {
                     </select>
 
                     <select name="situacao" defaultValue={this.state.situacao} onChange={this.atualizaStateCampo} >
-                        <option value="Agendada" disabled>Situação</option>
+                        <option value="" disabled>Situação</option>
                         <option value="Agendada">Agendada</option>
                         <option value="Realizada">Realizada</option>
                         <option value="Cancelada">Cancelada</option>
@@ -132,7 +133,7 @@ export default class CadastrarConsultas extends Component {
 
                     <input name="valor" value={this.state.valor} type="number" min="0.00" max="10000.00" step="0.01" placeholder="Valor" onChange={this.atualizaStateCampo} />
 
-                    <input name="dataConsulta" value={this.state.dataConsulta} type="date" placeholder="Data" onChange={this.atualizaStateCampo} />
+                    <input name="dataConsulta" value={this.state.dataConsulta} type="datetime-local" placeholder="Data" onChange={this.atualizaStateCampo} />
 
 
                     {
